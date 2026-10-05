@@ -3,83 +3,140 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07111a" />
     <title>Nolan LAN Party</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+
     <header class="hero">
       <div class="container">
-        <h1>Nolan LAN Party</h1>
-        <p id="event-summary" class="muted"></p>
+        <div class="topbar">
+          <a class="brand" href="#top" aria-label="Nolan LAN Party home">
+            <span class="brand-mark">N</span>
+            <span>NOLAN LAN</span>
+          </a>
+          <nav class="nav">
+            <a href="#schedule">Schedule</a>
+            <a href="#attendees">Players</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+        </div>
+
+        <div class="hero-panel" id="top">
+          <div class="hero-copy">
+            <p class="eyebrow">ONE DAY. THREE WORLDS. ZERO PRODUCTIVITY.</p>
+            <h1>Nolan <span>LAN Party</span></h1>
+            <p class="hero-lead">Warcraft III strategy, Counter-Strike chaos, Among Us accusations — local and remote players welcome.</p>
+            <p id="event-summary" class="event-summary"></p>
+
+            <div class="game-tags" aria-label="Featured games">
+              <span class="game-tag wc3">⚔ Warcraft III</span>
+              <span class="game-tag css">✦ Counter-Strike: Source</span>
+              <span class="game-tag among">● Among Us</span>
+            </div>
+          </div>
+
+          <div class="hero-status">
+            <span class="pulse"></span>
+            <div>
+              <strong>LAN STATUS</strong>
+              <span>Registration online</span>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
     <main class="container grid">
-      <section class="card" id="registration">
-        <h2>Register / RSVP</h2>
+      <section class="card card-registration" id="registration">
+        <div class="card-heading">
+          <span class="kicker">JOIN THE LOBBY</span>
+          <h2>Register / RSVP</h2>
+        </div>
         <p class="muted" id="registration-status"></p>
         <form id="registration-form" class="stack">
           <label>
-            Name
-            <input type="text" id="reg-name" required />
+            Callsign
+            <input type="text" id="reg-name" placeholder="Your name" required />
           </label>
           <label>
-            Discord / Contact (optional)
-            <input type="text" id="reg-contact" />
+            Discord / Contact <span class="label-note">optional</span>
+            <input type="text" id="reg-contact" placeholder="@handle" />
           </label>
           <label>
             Attendance type
             <select id="reg-seat-type" required>
-              <option value="local">Local (at house)</option>
-              <option value="remote">Remote</option>
+              <option value="local">Local — command center</option>
+              <option value="remote">Remote — Tailscale tunnel</option>
             </select>
           </label>
-          <button type="submit">Reserve spot</button>
+          <button type="submit">Reserve my seat <span aria-hidden="true">→</span></button>
         </form>
         <p id="registration-message" class="feedback" aria-live="polite"></p>
       </section>
 
-      <section class="card" id="availability">
-        <h2>Seat Availability</h2>
-        <p class="muted">
-          Remote capacity can use dedicated remote seats plus any unused local seats.
-        </p>
+      <section class="card card-seats" id="availability">
+        <div class="card-heading">
+          <span class="kicker">CAPACITY</span>
+          <h2>Seat Availability</h2>
+        </div>
+        <p class="muted">Remote players can use dedicated remote seats plus any unused local slots.</p>
         <div class="seat-grid">
-          <div>
-            <h3>Local seats</h3>
+          <div class="seat-stat">
+            <span class="seat-icon">⌂</span>
+            <h3>Local</h3>
             <p id="local-seats" class="seat-count"></p>
           </div>
-          <div>
-            <h3>Remote-capable seats</h3>
+          <div class="seat-stat">
+            <span class="seat-icon">⌁</span>
+            <h3>Remote-capable</h3>
             <p id="remote-seats" class="seat-count"></p>
           </div>
         </div>
       </section>
 
-      <section class="card" id="schedule">
-        <h2>Games Schedule</h2>
-        <ul id="schedule-list" class="list"></ul>
+      <section class="card card-schedule" id="schedule">
+        <div class="card-heading">
+          <span class="kicker">MISSION TIMELINE</span>
+          <h2>Games Schedule</h2>
+        </div>
+        <ul id="schedule-list" class="list schedule-list"></ul>
       </section>
 
       <section class="card" id="updates">
-        <h2>Live Updates</h2>
-        <ul id="updates-list" class="list"></ul>
+        <div class="card-heading">
+          <span class="kicker">SERVER FEED</span>
+          <h2>Live Updates</h2>
+        </div>
+        <ul id="updates-list" class="list update-list"></ul>
       </section>
 
       <section class="card" id="attendees">
-        <h2>Seat List</h2>
-        <ul id="attendees-list" class="list"></ul>
+        <div class="card-heading">
+          <span class="kicker">ROSTER</span>
+          <h2>Seat List</h2>
+        </div>
+        <ul id="attendees-list" class="list attendee-list"></ul>
       </section>
 
       <section class="card" id="faq">
-        <h2>FAQ</h2>
-        <div id="faq-list" class="stack"></div>
+        <div class="card-heading">
+          <span class="kicker">INTEL</span>
+          <h2>FAQ</h2>
+        </div>
+        <div id="faq-list" class="stack faq-list"></div>
       </section>
 
-      <section class="card" id="admin">
-        <h2>Admin</h2>
+      <section class="card card-admin" id="admin">
+        <div class="card-heading">
+          <span class="kicker">HOST ONLY</span>
+          <h2>Admin Console</h2>
+        </div>
         <div id="admin-login" class="stack">
-          <p class="muted">Simple shared-password access for V1.</p>
+          <p class="muted">Shared-password access for event control.</p>
           <label>
             Admin password
             <input type="password" id="admin-password" />
@@ -115,14 +172,17 @@
 
           <div class="actions">
             <button type="submit">Save content</button>
-            <button id="admin-clear-registrations" type="button" class="ghost">
-              Clear registrations
-            </button>
+            <button id="admin-clear-registrations" type="button" class="ghost">Clear registrations</button>
           </div>
           <p id="admin-message" class="feedback" aria-live="polite"></p>
         </form>
       </section>
     </main>
+
+    <footer class="footer container">
+      <span>NOLAN LAN // 2026</span>
+      <span>Powered by questionable tactics and ethernet.</span>
+    </footer>
 
     <script src="./app.js"></script>
   </body>
