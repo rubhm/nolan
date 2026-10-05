@@ -179,7 +179,7 @@ function render() {
   renderSummary();
   renderRegistrationStatus();
   renderAvailability();
-  renderList(el.scheduleList, state.content.schedule);
+  renderSchedule();
   renderList(el.updatesList, state.content.updates);
   renderFaq();
   renderAttendees();
@@ -207,6 +207,37 @@ function renderAvailability() {
   const totalCap = caps.local + caps.remote;
   el.localSeats.textContent = `${remainingSeats("local")} left / ${caps.local}`;
   el.remoteSeats.textContent = `${remainingSeats("remote")} left / ${totalCap}`;
+}
+
+function renderSchedule() {
+  el.scheduleList.textContent = "";
+  const items = state.content.schedule;
+  if (!Array.isArray(items) || items.length === 0) {
+    const empty = document.createElement("li");
+    empty.textContent = "No missions scheduled yet.";
+    el.scheduleList.appendChild(empty);
+    return;
+  }
+
+  items.forEach((item) => {
+    const text = String(item);
+    const li = document.createElement("li");
+    const timeMatch = text.match(/^\s*(\d{1,2}:\d{2})\s*[-–—]?\s*(.*)$/);
+    const label = timeMatch ? timeMatch[2] : text;
+    li.dataset.time = timeMatch ? timeMatch[1] : "•";
+    li.textContent = label || text;
+
+    const lower = text.toLowerCase();
+    if (lower.includes("wc3") || lower.includes("warcraft") || lower.includes("legion")) {
+      li.classList.add("game-wc3");
+    } else if (lower.includes("css") || lower.includes("counter-strike") || lower.includes("counter strike")) {
+      li.classList.add("game-css");
+    } else if (lower.includes("among us")) {
+      li.classList.add("game-among");
+    }
+
+    el.scheduleList.appendChild(li);
+  });
 }
 
 function renderList(listEl, items) {
@@ -258,8 +289,17 @@ function renderAttendees() {
   }
   registrations.forEach((entry) => {
     const li = document.createElement("li");
-    const contact = entry.contact ? ` (${entry.contact})` : "";
-    li.textContent = `${entry.name}${contact} — ${entry.seatType}`;
+    const player = document.createElement("span");
+    const contact = entry.contact ? ` · ${entry.contact}` : "";
+    player.textContent = `${entry.name}${contact}`;
+
+    const badge = document.createElement("span");
+    badge.className = "seat-badge";
+    badge.textContent = entry.seatType;
+
+    li.appendChild(player);
+    li.appendChild(badge);
+
     if (adminUnlocked) {
       const removeButton = document.createElement("button");
       removeButton.type = "button";
