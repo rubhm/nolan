@@ -4,19 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Nolan LAN Party</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=theme2" />
   </head>
   <body>
     <header class="hero">
+      <div class="container topbar">
+        <div>
+          <p class="kicker">Crew Lobby // Azeroth Uplink</p>
+          <h1>Nolan LAN Party</h1>
+        </div>
+        <nav class="top-links" aria-label="Quick links">
+          <button id="open-admin-btn" type="button" class="ghost">
+            Admin tools
+          </button>
+        </nav>
+      </div>
       <div class="container">
-        <h1>Nolan LAN Party</h1>
         <p id="event-summary" class="muted"></p>
       </div>
     </header>
 
     <main class="container grid">
       <section class="card" id="registration">
-        <h2>Register / RSVP</h2>
+        <h2>Register / Lobby RSVP</h2>
         <p class="muted" id="registration-status"></p>
         <form id="registration-form" class="stack">
           <label>
@@ -40,7 +50,7 @@
       </section>
 
       <section class="card" id="availability">
-        <h2>Seat Availability</h2>
+        <h2>Crew Capacity</h2>
         <p class="muted">
           Remote capacity can use dedicated remote seats plus any unused local seats.
         </p>
@@ -57,73 +67,78 @@
       </section>
 
       <section class="card" id="schedule">
-        <h2>Games Schedule</h2>
+        <h2>Match Rotation</h2>
         <ul id="schedule-list" class="list"></ul>
       </section>
 
       <section class="card" id="updates">
-        <h2>Live Updates</h2>
+        <h2>Ship Comms</h2>
         <ul id="updates-list" class="list"></ul>
       </section>
 
       <section class="card" id="attendees">
-        <h2>Seat List</h2>
+        <h2>Crew Roster</h2>
         <ul id="attendees-list" class="list"></ul>
       </section>
 
       <section class="card" id="faq">
-        <h2>FAQ</h2>
+        <h2>Intel / FAQ</h2>
         <div id="faq-list" class="stack"></div>
-      </section>
-
-      <section class="card" id="admin">
-        <h2>Admin</h2>
-        <div id="admin-login" class="stack">
-          <p class="muted">Simple shared-password access for V1.</p>
-          <label>
-            Admin password
-            <input type="password" id="admin-password" />
-          </label>
-          <button id="admin-login-btn" type="button">Unlock admin mode</button>
-        </div>
-
-        <form id="admin-form" class="stack hidden">
-          <label class="inline">
-            <input type="checkbox" id="admin-registration-open" />
-            Registration open
-          </label>
-          <label>
-            Local seat capacity
-            <input type="number" id="admin-local-capacity" min="0" />
-          </label>
-          <label>
-            Remote base seat capacity
-            <input type="number" id="admin-remote-capacity" min="0" />
-          </label>
-          <label>
-            Schedule entries (one per line)
-            <textarea id="admin-schedule" rows="5"></textarea>
-          </label>
-          <label>
-            Live updates (one per line)
-            <textarea id="admin-updates" rows="4"></textarea>
-          </label>
-          <label>
-            FAQ entries (one per line: <code>Question | Answer</code>)
-            <textarea id="admin-faq" rows="5"></textarea>
-          </label>
-
-          <div class="actions">
-            <button type="submit">Save content</button>
-            <button id="admin-clear-registrations" type="button" class="ghost">
-              Clear registrations
-            </button>
-          </div>
-          <p id="admin-message" class="feedback" aria-live="polite"></p>
-        </form>
       </section>
     </main>
 
-    <script src="./app.js"></script>
+    <div id="admin-overlay" class="admin-overlay hidden"></div>
+    <aside id="admin-panel" class="admin-panel hidden" aria-label="Admin panel">
+      <div class="admin-panel-header">
+        <h2>Admin Console</h2>
+        <button id="close-admin-btn" type="button" class="ghost">Close</button>
+      </div>
+
+      <div id="admin-login" class="stack">
+        <p class="muted">Shared password access for organizer controls.</p>
+        <label>
+          Admin password
+          <input type="password" id="admin-password" />
+        </label>
+        <button id="admin-login-btn" type="button">Unlock admin mode</button>
+      </div>
+
+      <form id="admin-form" class="stack hidden">
+        <label class="inline">
+          <input type="checkbox" id="admin-registration-open" />
+          Registration open
+        </label>
+        <label>
+          Local seat capacity
+          <input type="number" id="admin-local-capacity" min="0" />
+        </label>
+        <label>
+          Remote base seat capacity
+          <input type="number" id="admin-remote-capacity" min="0" />
+        </label>
+        <label>
+          Schedule entries (one per line)
+          <textarea id="admin-schedule" rows="5"></textarea>
+        </label>
+        <label>
+          Live updates (one per line)
+          <textarea id="admin-updates" rows="4"></textarea>
+        </label>
+        <label>
+          FAQ entries (one per line: <code>Question | Answer</code>)
+          <textarea id="admin-faq" rows="5"></textarea>
+        </label>
+
+        <div class="actions">
+          <button type="submit">Save content</button>
+          <button id="admin-clear-registrations" type="button" class="ghost">
+            Clear registrations
+          </button>
+        </div>
+        <p id="admin-message" class="feedback" aria-live="polite"></p>
+      </form>
+    </aside>
+
+    <script src="./app.js?v=theme2"></script>
   </body>
 </html>

@@ -16,6 +16,10 @@ const el = {
   updatesList: byId("updates-list"),
   attendeesList: byId("attendees-list"),
   faqList: byId("faq-list"),
+  openAdminBtn: byId("open-admin-btn"),
+  closeAdminBtn: byId("close-admin-btn"),
+  adminOverlay: byId("admin-overlay"),
+  adminPanel: byId("admin-panel"),
   adminLogin: byId("admin-login"),
   adminPassword: byId("admin-password"),
   adminLoginBtn: byId("admin-login-btn"),
@@ -38,6 +42,24 @@ async function initialize() {
 }
 
 function wireHandlers() {
+  el.openAdminBtn.addEventListener("click", () => {
+    openAdminPanel();
+  });
+
+  el.closeAdminBtn.addEventListener("click", () => {
+    closeAdminPanel();
+  });
+
+  el.adminOverlay.addEventListener("click", () => {
+    closeAdminPanel();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAdminPanel();
+    }
+  });
+
   el.registrationForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearFeedback(el.registrationMessage);
@@ -373,4 +395,14 @@ function setError(node, message) {
 function clearFeedback(node) {
   node.textContent = "";
   node.className = "feedback";
+}
+
+function openAdminPanel() {
+  el.adminOverlay.classList.remove("hidden");
+  el.adminPanel.classList.remove("hidden");
+}
+
+function closeAdminPanel() {
+  el.adminOverlay.classList.add("hidden");
+  el.adminPanel.classList.add("hidden");
 }
