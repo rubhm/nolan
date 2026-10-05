@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nolan LAN Party</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <h1>Nolan LAN Party</h1>
+        <p id="event-summary" class="muted"></p>
+      </div>
+    </header>
+
+    <main class="container grid">
+      <section class="card" id="registration">
+        <h2>Register / RSVP</h2>
+        <p class="muted" id="registration-status"></p>
+        <form id="registration-form" class="stack">
+          <label>
+            Name
+            <input type="text" id="reg-name" required />
+          </label>
+          <label>
+            Discord / Contact (optional)
+            <input type="text" id="reg-contact" />
+          </label>
+          <label>
+            Attendance type
+            <select id="reg-seat-type" required>
+              <option value="local">Local (at house)</option>
+              <option value="remote">Remote</option>
+            </select>
+          </label>
+          <button type="submit">Reserve spot</button>
+        </form>
+        <p id="registration-message" class="feedback" aria-live="polite"></p>
+      </section>
+
+      <section class="card" id="availability">
+        <h2>Seat Availability</h2>
+        <p class="muted">
+          Remote capacity can use dedicated remote seats plus any unused local seats.
+        </p>
+        <div class="seat-grid">
+          <div>
+            <h3>Local seats</h3>
+            <p id="local-seats" class="seat-count"></p>
+          </div>
+          <div>
+            <h3>Remote-capable seats</h3>
+            <p id="remote-seats" class="seat-count"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="schedule">
+        <h2>Games Schedule</h2>
+        <ul id="schedule-list" class="list"></ul>
+      </section>
+
+      <section class="card" id="updates">
+        <h2>Live Updates</h2>
+        <ul id="updates-list" class="list"></ul>
+      </section>
+
+      <section class="card" id="attendees">
+        <h2>Seat List</h2>
+        <ul id="attendees-list" class="list"></ul>
+      </section>
+
+      <section class="card" id="faq">
+        <h2>FAQ</h2>
+        <div id="faq-list" class="stack"></div>
+      </section>
+
+      <section class="card" id="admin">
+        <h2>Admin</h2>
+        <div id="admin-login" class="stack">
+          <p class="muted">Simple shared-password access for V1.</p>
+          <label>
+            Admin password
+            <input type="password" id="admin-password" />
+          </label>
+          <button id="admin-login-btn" type="button">Unlock admin mode</button>
+        </div>
+
+        <form id="admin-form" class="stack hidden">
+          <label class="inline">
+            <input type="checkbox" id="admin-registration-open" />
+            Registration open
+          </label>
+          <label>
+            Local seat capacity
+            <input type="number" id="admin-local-capacity" min="0" />
+          </label>
+          <label>
+            Remote base seat capacity
+            <input type="number" id="admin-remote-capacity" min="0" />
+          </label>
+          <label>
+            Schedule entries (one per line)
+            <textarea id="admin-schedule" rows="5"></textarea>
+          </label>
+          <label>
+            Live updates (one per line)
+            <textarea id="admin-updates" rows="4"></textarea>
+          </label>
+          <label>
+            FAQ entries (one per line: <code>Question | Answer</code>)
+            <textarea id="admin-faq" rows="5"></textarea>
+          </label>
+
+          <div class="actions">
+            <button type="submit">Save content</button>
+            <button id="admin-clear-registrations" type="button" class="ghost">
+              Clear registrations
+            </button>
+          </div>
+          <p id="admin-message" class="feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

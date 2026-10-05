@@ -1,0 +1,38 @@
+{
+  "content": {
+    "eventName": "Nolan LAN Party",
+    "eventDate": "7 November 2026",
+    "locationModel": "My house OR remote",
+    "expectedAttendees": "8-10",
+    "registrationOpen": true,
+    "capacities": {
+      "local": 7,
+      "remote": 3
+    },
+    "schedule": [
+      "10:00 - Arrivals + Setup",
+      "12:00 - CSS: Random Map Rotation (Zombie/Warcraft/Surf/Defuse/Hostage/...)",
+      "14:00 - CSS: MR12 Matches (de_train, de_nuke, de_dust2)",
+      "16:00 - Among Us",
+      "18:00 - WC3: Custom Game (TBD)",
+      "19:00 - WC3: LegionTD (version TBD)",
+      "20:00 - WC3: The Crucible or Dustwallow Keys",
+      "22:00 - Free Play",
+      "00:00 - The End"
+    ],
+    "updates": [
+      "Welcome! Registrations are open."
+    ],
+    "faq": [
+      {
+        "question": "Can I join remotely?",
+        "answer": "Yes. Remote registrations can use remote seats and any unused local seats."
+      },
+      {
+        "question": "How many local seats are there?",
+        "answer": "7 local seats. Hard limit."
+      }
+    ]
+  },
+  "registrations": []
+}
