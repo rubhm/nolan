@@ -20,7 +20,14 @@ const MIME_TYPES = {
   ".json": "application/json; charset=utf-8",
 };
 
-ensureDataFile();
+try {
+  ensureDataFile();
+} catch (error) {
+  console.error(
+    `Failed to initialize data store at "${DATA_PATH}". Ensure DATA_DIR points to a writable directory.`
+  );
+  process.exit(1);
+}
 
 const server = http.createServer(async (req, res) => {
   try {
