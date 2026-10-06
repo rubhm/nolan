@@ -80,11 +80,12 @@ Sitewide player password:
 docker run --rm -p 3000:3000 -e SITE_PASSWORD='your-player-password' nolan:local
 ```
 
-Map data storage to a host path (absolute data dir in container):
+Map data storage to a host path (bind mount for persistence):
 
 ```bash
+HOST_DATA_DIR=/absolute/path/to/nolan-data
 docker run --rm -p 3000:3000 \
-  -v "$PWD/data:/app/data" \
+  -v "$HOST_DATA_DIR:/app/data" \
   -e DATA_DIR=/app/data \
   nolan:local
 ```
