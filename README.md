@@ -16,6 +16,14 @@ This project uses a tiny Node backend so content and registrations are shared fo
 2. Open:
    - `http://localhost:3000`
 
+Optional: run using values from `.env`:
+
+```bash
+cp .env.example .env
+set -a && . ./.env && set +a
+node server.js
+```
+
 To require a sitewide player password:
 
 ```bash
