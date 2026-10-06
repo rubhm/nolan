@@ -24,6 +24,8 @@ set -a && . ./.env && set +a
 node server.js
 ```
 
+`DATA_DIR` can point to an absolute data directory path if you want to map persistence to a specific filesystem location.
+
 To require a sitewide player password:
 
 ```bash
@@ -35,10 +37,13 @@ SITE_PASSWORD='your-player-password' node server.js
 - Click **Admin tools** in the top-right of the page.
 - Password: `lanparty-admin` (or set `ADMIN_PASSWORD` env var before starting the server)
 - Admin mode can edit schedule, updates, FAQ, registration open/closed state, and seat capacities.
+- Admin mode can update each attendee between `local` and `remote`, or remove registrations individually.
 
 ## Shared data storage
 
-- Shared content and registrations are stored in `data/store.json`.
+- Shared content and registrations are stored in `<DATA_DIR>/store.json`.
+- By default, `DATA_DIR` is `./data` in the project root.
+- Set `DATA_DIR` to an absolute directory path to store data elsewhere.
 - Anyone using this running server sees the same data.
 
 ## Seat logic
@@ -73,6 +78,15 @@ Sitewide player password:
 
 ```bash
 docker run --rm -p 3000:3000 -e SITE_PASSWORD='your-player-password' nolan:local
+```
+
+Map data storage to a host path (absolute data dir in container):
+
+```bash
+docker run --rm -p 3000:3000 \
+  -v "$PWD/data:/app/data" \
+  -e DATA_DIR=/app/data \
+  nolan:local
 ```
 
 ## Container publishing on tags

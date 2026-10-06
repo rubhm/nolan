@@ -170,6 +170,40 @@ function wireHandlers() {
     if (!id) {
       return;
     }
+    const action = target.dataset.action;
+
+    if (action === "update-seat") {
+      const row = target.closest("li");
+      if (!row) {
+        return;
+      }
+      const seatSelect = row.querySelector('select[data-role="seat-type"]');
+      if (!(seatSelect instanceof HTMLSelectElement)) {
+        return;
+      }
+      const seatType = seatSelect.value;
+      if (!isSeatType(seatType)) {
+        return setError(el.adminMessage, "Invalid seat type.");
+      }
+      try {
+        const response = await api(`/api/registrations/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          adminPassword,
+          body: { seatType },
+        });
+        state = response.state;
+        render();
+        setOk(el.adminMessage, response.message || "Seat assignment updated.");
+      } catch (error) {
+        setError(el.adminMessage, error.message);
+      }
+      return;
+    }
+
+    if (action !== "remove") {
+      return;
+    }
+
     try {
       const response = await api(`/api/registrations/${encodeURIComponent(id)}`, {
         method: "DELETE",
@@ -281,15 +315,37 @@ function renderAttendees() {
   registrations.forEach((entry) => {
     const li = document.createElement("li");
     const contact = entry.contact ? ` (${entry.contact})` : "";
-    li.textContent = `${entry.name}${contact} — ${entry.seatType}`;
+    li.textContent = `${entry.name}${contact} — `;
     if (adminUnlocked) {
+      const seatSelect = document.createElement("select");
+      seatSelect.dataset.role = "seat-type";
+      seatSelect.innerHTML = `
+        <option value="local">local</option>
+        <option value="remote">remote</option>
+      `;
+      seatSelect.value = entry.seatType;
+
+      const updateButton = document.createElement("button");
+      updateButton.type = "button";
+      updateButton.className = "ghost";
+      updateButton.dataset.id = entry.id;
+      updateButton.dataset.action = "update-seat";
+      updateButton.textContent = "Update seat";
+
       const removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "ghost";
       removeButton.dataset.id = entry.id;
+      removeButton.dataset.action = "remove";
       removeButton.textContent = "Remove";
       li.appendChild(document.createTextNode(" "));
+      li.appendChild(seatSelect);
+      li.appendChild(document.createTextNode(" "));
+      li.appendChild(updateButton);
+      li.appendChild(document.createTextNode(" "));
       li.appendChild(removeButton);
+    } else {
+      li.appendChild(document.createTextNode(entry.seatType));
     }
     el.attendeesList.appendChild(li);
   });

@@ -10,7 +10,7 @@ const SITE_ACCESS_COOKIE = "nolan_site_access";
 const SITE_ACCESS_MAX_AGE = 60 * 60 * 24 * 7;
 const SITE_ACCESS_TOKEN = SITE_PASSWORD ? createSiteAccessToken(SITE_PASSWORD) : "";
 const ROOT_DIR = __dirname;
-const DATA_DIR = path.join(ROOT_DIR, "data");
+const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(ROOT_DIR, "data");
 const DATA_PATH = path.join(DATA_DIR, "store.json");
 
 const MIME_TYPES = {
@@ -166,6 +166,43 @@ async function handleApi(req, res, pathname) {
     }
     saveStore(store);
     return sendJson(res, 200, { state: store, message: "Registration removed." });
+  }
+
+  if (req.method === "PATCH" && pathname.startsWith("/api/registrations/")) {
+    if (!isAdmin(req)) {
+      return sendJson(res, 401, { error: "Invalid admin password." });
+    }
+
+    const body = await readJsonBody(req, res);
+    if (!body) {
+      return;
+    }
+    const seatType = String(body.seatType || "").trim();
+    if (seatType !== "local" && seatType !== "remote") {
+      return sendJson(res, 400, { error: "Seat type must be local or remote." });
+    }
+
+    const id = pathname.split("/").pop();
+    const store = loadStore();
+    const entry = store.registrations.find((item) => item.id === id);
+    if (!entry) {
+      return sendJson(res, 404, { error: "Registration not found." });
+    }
+
+    if (entry.seatType === seatType) {
+      return sendJson(res, 200, { state: store, message: "Seat assignment already set." });
+    }
+
+    if (seatType === "local") {
+      const usage = seatUsage(store);
+      if (usage.localUsed >= usage.localCap) {
+        return sendJson(res, 409, { error: "No local seats are available." });
+      }
+    }
+
+    entry.seatType = seatType;
+    saveStore(store);
+    return sendJson(res, 200, { state: store, message: "Seat assignment updated." });
   }
 
   return sendJson(res, 404, { error: "Not found." });
