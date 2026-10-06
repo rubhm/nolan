@@ -1,10 +1,14 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
-const { randomUUID } = require("node:crypto");
+const { randomUUID, createHash } = require("node:crypto");
 
 const PORT = Number.parseInt(process.env.PORT || "3000", 10);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "lanparty-admin";
+const SITE_PASSWORD = process.env.SITE_PASSWORD || "";
+const SITE_ACCESS_COOKIE = "nolan_site_access";
+const SITE_ACCESS_MAX_AGE = 60 * 60 * 24 * 7;
+const SITE_ACCESS_TOKEN = SITE_PASSWORD ? createSiteAccessToken(SITE_PASSWORD) : "";
 const ROOT_DIR = __dirname;
 const DATA_DIR = path.join(ROOT_DIR, "data");
 const DATA_PATH = path.join(DATA_DIR, "store.json");
@@ -22,6 +26,28 @@ const server = http.createServer(async (req, res) => {
   try {
     const requestUrl = new URL(req.url, `http://${req.headers.host}`);
     const pathname = requestUrl.pathname;
+
+    if (pathname === "/api/healthz") {
+      return sendJson(res, 200, { ok: true });
+    }
+
+    if (SITE_PASSWORD) {
+      if (req.method === "GET" && pathname === "/access") {
+        return renderAccessPage(res, false);
+      }
+      if (req.method === "POST" && pathname === "/access") {
+        return handleAccessLogin(req, res);
+      }
+      if (req.method === "POST" && pathname === "/logout") {
+        return handleAccessLogout(res);
+      }
+      if (!hasSiteAccess(req)) {
+        if (pathname.startsWith("/api/")) {
+          return sendJson(res, 401, { error: "Site password required." });
+        }
+        return redirect(res, "/access");
+      }
+    }
 
     if (pathname.startsWith("/api/")) {
       return handleApi(req, res, pathname);
@@ -140,10 +166,6 @@ async function handleApi(req, res, pathname) {
     }
     saveStore(store);
     return sendJson(res, 200, { state: store, message: "Registration removed." });
-  }
-
-  if (req.method === "GET" && pathname === "/api/healthz") {
-    return sendJson(res, 200, { ok: true });
   }
 
   return sendJson(res, 404, { error: "Not found." });
@@ -277,9 +299,153 @@ function readJsonBody(req, res) {
   });
 }
 
+function readUrlEncodedBody(req, res) {
+  return new Promise((resolve) => {
+    let raw = "";
+    req.on("data", (chunk) => {
+      raw += chunk;
+      if (raw.length > 100_000) {
+        sendJson(res, 413, { error: "Payload too large." });
+        req.destroy();
+        resolve(null);
+      }
+    });
+    req.on("end", () => {
+      resolve(new URLSearchParams(raw));
+    });
+    req.on("error", () => {
+      sendJson(res, 400, { error: "Failed to read request body." });
+      resolve(null);
+    });
+  });
+}
+
+async function handleAccessLogin(req, res) {
+  const body = await readUrlEncodedBody(req, res);
+  if (!body) {
+    return;
+  }
+  const password = String(body.get("password") || "");
+  if (password !== SITE_PASSWORD) {
+    return renderAccessPage(res, true);
+  }
+  res.writeHead(302, {
+    Location: "/",
+    "Set-Cookie": `${SITE_ACCESS_COOKIE}=${SITE_ACCESS_TOKEN}; Max-Age=${SITE_ACCESS_MAX_AGE}; Path=/; HttpOnly; SameSite=Lax`,
+  });
+  res.end();
+}
+
+function handleAccessLogout(res) {
+  res.writeHead(302, {
+    Location: "/access",
+    "Set-Cookie": `${SITE_ACCESS_COOKIE}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax`,
+  });
+  res.end();
+}
+
+function renderAccessPage(res, showError) {
+  const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nolan LAN Party Access</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 20% -10%, #223a8f, transparent 45%), #070b1d;
+        color: #e8f5ff;
+        font-family: "Trebuchet MS", Arial, sans-serif;
+      }
+      .card {
+        width: min(420px, 92vw);
+        background: rgba(12, 19, 48, 0.92);
+        border: 1px solid rgba(110, 176, 255, 0.5);
+        border-radius: 14px;
+        padding: 1rem;
+      }
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.2rem;
+      }
+      p {
+        color: #b7c9ff;
+      }
+      input, button {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 0.55rem;
+        padding: 0.6rem 0.7rem;
+        border-radius: 10px;
+        border: 1px solid rgba(127, 183, 255, 0.5);
+        font: inherit;
+      }
+      input {
+        color: #e8f5ff;
+        background: #0d1435;
+      }
+      button {
+        background: #58f3ff;
+        color: #0b1227;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .error {
+        color: #ff8aa5;
+        min-height: 1.2em;
+      }
+    </style>
+  </head>
+  <body>
+    <form class="card" method="post" action="/access">
+      <h1>LAN Party Access</h1>
+      <p>Enter the shared site password to continue.</p>
+      <input type="password" name="password" placeholder="Site password" required />
+      <button type="submit">Enter site</button>
+      <p class="error">${showError ? "Wrong password. Try again." : ""}</p>
+    </form>
+  </body>
+</html>`;
+  res.writeHead(showError ? 401 : 200, { "Content-Type": "text/html; charset=utf-8" });
+  res.end(html);
+}
+
+function hasSiteAccess(req) {
+  const cookies = parseCookies(req.headers.cookie || "");
+  return cookies[SITE_ACCESS_COOKIE] === SITE_ACCESS_TOKEN;
+}
+
+function parseCookies(cookieHeader) {
+  if (!cookieHeader) {
+    return {};
+  }
+  return cookieHeader.split(";").reduce((acc, part) => {
+    const [rawName, ...rawValue] = part.trim().split("=");
+    if (!rawName) {
+      return acc;
+    }
+    acc[rawName] = rawValue.join("=");
+    return acc;
+  }, {});
+}
+
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(payload));
+}
+
+function redirect(res, location) {
+  res.writeHead(302, { Location: location });
+  res.end();
+}
+
+function createSiteAccessToken(password) {
+  return createHash("sha256").update(password).digest("hex").slice(0, 32);
 }
 
 function toNonNegativeInt(value) {

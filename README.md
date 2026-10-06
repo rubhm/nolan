@@ -16,9 +16,15 @@ This project uses a tiny Node backend so content and registrations are shared fo
 2. Open:
    - `http://localhost:3000`
 
+To require a sitewide player password:
+
+```bash
+SITE_PASSWORD='your-player-password' node server.js
+```
+
 ## Admin mode (V1)
 
-- Open the **Admin** card at the bottom of the page.
+- Click **Admin tools** in the top-right of the page.
 - Password: `lanparty-admin` (or set `ADMIN_PASSWORD` env var before starting the server)
 - Admin mode can edit schedule, updates, FAQ, registration open/closed state, and seat capacities.
 
@@ -34,3 +40,43 @@ This project uses a tiny Node backend so content and registrations are shared fo
 - Effective constraints:
   - `local_registrations <= local_capacity`
   - `total_registrations <= local_capacity + remote_capacity`
+
+## Docker
+
+Build:
+
+```bash
+docker build -t nolan:local .
+```
+
+Run:
+
+```bash
+docker run --rm -p 3000:3000 nolan:local
+```
+
+Optional custom admin password:
+
+```bash
+docker run --rm -p 3000:3000 -e ADMIN_PASSWORD='change-me' nolan:local
+```
+
+Sitewide player password:
+
+```bash
+docker run --rm -p 3000:3000 -e SITE_PASSWORD='your-player-password' nolan:local
+```
+
+## Container publishing on tags
+
+This repository publishes a container image to GHCR when a tag matching `vX.X.X` is pushed (for example `v1.2.3`).
+
+- Workflow: `.github/workflows/publish-image.yml`
+- Image: `ghcr.io/rubhm/nolan`
+- Tags pushed:
+  - `vX.X.X` (the release tag)
+  - `latest`
+
+## Sitewide access gate
+
+When `SITE_PASSWORD` is set, users are shown a password screen before they can access the site or API. After entering the correct password, they get a session cookie and can browse normally.

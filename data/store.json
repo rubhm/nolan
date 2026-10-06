@@ -34,5 +34,13 @@
       }
     ]
   },
-  "registrations": []
+  "registrations": [
+    {
+      "id": "45047d49-ac2f-4ce5-9721-7c96d425141b",
+      "name": "Ruben",
+      "contact": "Test",
+      "seatType": "local",
+      "createdAt": "2026-10-05T12:20:15.802Z"
+    }
+  ]
 }

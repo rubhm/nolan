@@ -1,4 +1,5 @@
 :root {
+  --side-art-width: clamp(190px, 22vw, 360px);
   --bg: #080b1c;
   --bg-2: #121637;
   --card: rgba(14, 20, 51, 0.82);
@@ -51,6 +52,31 @@ body::before {
 .container {
   width: min(1060px, 92vw);
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.side-art {
+  position: fixed;
+  bottom: 0;
+  width: var(--side-art-width);
+  max-height: 80vh;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 12;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
+  opacity: 0.97;
+  will-change: transform;
+}
+
+.side-art-left {
+  left: calc(var(--side-art-width) * -0.33);
+  transform: none;
+}
+
+.side-art-right {
+  right: -2px;
+  transform: none;
 }
 
 .hero {
@@ -294,6 +320,9 @@ button.ghost {
 }
 
 @media (max-width: 740px) {
+  .side-art {
+    display: none;
+  }
   .topbar {
     flex-direction: column;
   }
