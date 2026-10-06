@@ -85,12 +85,15 @@ Map data storage to a host path (bind mount for persistence):
 ```bash
 HOST_DATA_DIR=/absolute/path/to/nolan-data
 mkdir -p "$HOST_DATA_DIR"
-sudo chown -R 1000:1000 "$HOST_DATA_DIR" # container runs as uid 1000 (node)
 docker run --rm -p 3000:3000 \
   -v "$HOST_DATA_DIR:/app/data" \
   -e DATA_DIR=/app/data \
+  -e PUID=99 \
+  -e PGID=100 \
   nolan:local
 ```
+
+For Unraid, `99:100` is typically `nobody:users`; adjust `PUID`/`PGID` to match your setup.
 
 If you prefer to avoid host permission management, use a named volume:
 
@@ -99,6 +102,8 @@ docker volume create nolan-data
 docker run --rm -p 3000:3000 \
   -v nolan-data:/app/data \
   -e DATA_DIR=/app/data \
+  -e PUID=99 \
+  -e PGID=100 \
   nolan:local
 ```
 
